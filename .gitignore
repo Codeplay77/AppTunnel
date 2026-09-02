@@ -1,0 +1,19 @@
+# Build
+[Bb]in/
+[Oo]bj/
+*.user
+
+# IDE
+.vs/
+.vscode/
+
+# Config gerado em runtime — credenciais reais (Webshare) e caminhos locais
+# nunca vão pro git (ver CLAUDE.md/PROJETO.md).
+config/
+
+# Lista de proxies solta na raiz do repo com credenciais reais.
+Webshare*.txt
+
+# Memória de projeto/instruções — uso interno, não vai pro repo público.
+CLAUDE.md
+PROJETO.md

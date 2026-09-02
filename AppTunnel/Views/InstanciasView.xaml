@@ -1,0 +1,23 @@
+<UserControl x:Class="AppTunnel.Views.InstanciasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8">
+            <ComboBox Width="220" ItemsSource="{Binding Perfis}" DisplayMemberPath="Nome"
+                      SelectedItem="{Binding PerfilSelecionado}" Margin="0,0,8,0"/>
+            <Button Content="Lançar" Command="{Binding ComandoLancar}" Width="90" Margin="0,0,8,0"/>
+            <Button Content="Encerrar" Command="{Binding ComandoEncerrar}" Width="90" Margin="0,0,8,0"/>
+            <Button Content="Novo perfil..." Click="NovoPerfil_Click" Width="110"/>
+        </StackPanel>
+        <DataGrid ItemsSource="{Binding Linhas}" SelectedItem="{Binding LinhaSelecionada}"
+                  AutoGenerateColumns="False" IsReadOnly="True" Margin="8">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nome" Binding="{Binding Nome}"/>
+                <DataGridTextColumn Header="PID" Binding="{Binding Pid}"/>
+                <DataGridTextColumn Header="Proxy ativo" Binding="{Binding ProxyAtual}"/>
+                <DataGridTextColumn Header="Conexões ativas" Binding="{Binding ConexoesAtivas}"/>
+                <DataGridTextColumn Header="Falhas" Binding="{Binding Falhas}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

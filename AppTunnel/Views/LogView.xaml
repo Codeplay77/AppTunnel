@@ -1,0 +1,11 @@
+<UserControl x:Class="AppTunnel.Views.LogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataGrid ItemsSource="{Binding Linhas}" AutoGenerateColumns="False" IsReadOnly="True" Margin="8">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Quando" Binding="{Binding Quando, StringFormat=HH:mm:ss}"/>
+            <DataGridTextColumn Header="Nível" Binding="{Binding Nivel}"/>
+            <DataGridTextColumn Header="Mensagem" Binding="{Binding Mensagem}" Width="*"/>
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

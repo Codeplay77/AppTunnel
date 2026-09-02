@@ -1,0 +1,295 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:conv="clr-namespace:AppTunnel.Conversores">
+
+    <conv:ExibirMembroConverter x:Key="ExibirMembro"/>
+
+    <!-- Paleta -->
+    <SolidColorBrush x:Key="CorFundo" Color="#0D1B2A"/>
+    <SolidColorBrush x:Key="CorPainel" Color="#16233A"/>
+    <SolidColorBrush x:Key="CorPainelClaro" Color="#1F3049"/>
+    <SolidColorBrush x:Key="CorBorda" Color="#2E4258"/>
+    <SolidColorBrush x:Key="CorTextoPrimario" Color="#E6EAF0"/>
+    <SolidColorBrush x:Key="CorTextoSecundario" Color="#8FA3BF"/>
+    <SolidColorBrush x:Key="CorAcento" Color="#3D8BFD"/>
+    <SolidColorBrush x:Key="CorAcentoEscuro" Color="#2B65C9"/>
+    <SolidColorBrush x:Key="CorSelecao" Color="#28405C"/>
+
+    <!-- Base -->
+    <Style TargetType="Window">
+        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+    <Style TargetType="UserControl">
+        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource CorTextoPrimario}"/>
+    </Style>
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+    </Style>
+    <Style TargetType="Label">
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+    </Style>
+
+    <!-- Button -->
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource CorAcento}"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource CorAcentoEscuro}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- TextBox -->
+    <Style TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource CorPainel}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="6,4"/>
+        <Setter Property="CaretBrush" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource CorAcento}"/>
+    </Style>
+
+    <!-- ComboBox -->
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="Padding" Value="8,5"/>
+        <Style.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorSelecao}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="ComboBox">
+        <Setter Property="Background" Value="{StaticResource CorPainel}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="24"/>
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="Bd" Grid.ColumnSpan="2" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"/>
+                        <TextBlock Grid.Column="0" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource ExibirMembro}">
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="SelectedItem"/>
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="DisplayMemberPath"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <Path Grid.Column="1" Data="M0,0 L4,4 L8,0 Z" Fill="{StaticResource CorTextoSecundario}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                        <ToggleButton Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" BorderThickness="0"
+                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                      ClickMode="Press">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Background="Transparent"/>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom"
+                               AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                            <Border Background="{StaticResource CorPainel}" BorderBrush="{StaticResource CorBorda}"
+                                    BorderThickness="1" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                    MaxHeight="260">
+                                <ScrollViewer>
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- TabControl / TabItem -->
+    <Style TargetType="TabItem">
+        <Setter Property="Foreground" Value="{StaticResource CorTextoSecundario}"/>
+        <Setter Property="Padding" Value="14,8"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="0,0,0,2" Margin="0,0,2,0">
+                        <ContentPresenter ContentSource="Header" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+                            <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="TabControl">
+        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabControl">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Top" Background="{StaticResource CorPainel}"
+                                BorderBrush="{StaticResource CorBorda}" BorderThickness="0,0,0,1">
+                            <TabPanel IsItemsHost="True" Margin="8,4,8,0"/>
+                        </Border>
+                        <Border Background="{StaticResource CorFundo}">
+                            <ContentPresenter ContentSource="SelectedContent"/>
+                        </Border>
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- DataGrid -->
+    <Style TargetType="DataGrid">
+        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="RowBackground" Value="{StaticResource CorPainel}"/>
+        <Setter Property="AlternatingRowBackground" Value="{StaticResource CorPainelClaro}"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="VerticalGridLinesBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="CanUserAddRows" Value="False"/>
+        <Setter Property="RowHeaderWidth" Value="0"/>
+    </Style>
+    <Style TargetType="DataGridColumnHeader">
+        <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style TargetType="DataGridCell">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorSelecao}"/>
+                <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Expander -->
+    <Style TargetType="Expander">
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="Background" Value="{StaticResource CorPainel}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="8"/>
+    </Style>
+
+    <!-- ListBox -->
+    <Style TargetType="ListBox">
+        <Setter Property="Background" Value="{StaticResource CorPainel}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style TargetType="ListBoxItem">
+        <Setter Property="Padding" Value="6,4"/>
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorSelecao}"/>
+                <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ScrollBar -->
+    <Style x:Key="TumbaRolagem" TargetType="Thumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Background="{StaticResource CorBorda}" CornerRadius="3" Margin="1"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="{StaticResource CorPainel}"/>
+        <Setter Property="Width" Value="12"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Track Name="PART_Track" IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource TumbaRolagem}"/>
+                            </Track.Thumb>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
