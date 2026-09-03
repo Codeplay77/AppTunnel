@@ -1,11 +1,81 @@
 <UserControl x:Class="AppTunnel.Views.LogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DataGrid ItemsSource="{Binding Linhas}" AutoGenerateColumns="False" IsReadOnly="True" Margin="8">
-        <DataGrid.Columns>
-            <DataGridTextColumn Header="Quando" Binding="{Binding Quando, StringFormat=HH:mm:ss}"/>
-            <DataGridTextColumn Header="Nível" Binding="{Binding Nivel}"/>
-            <DataGridTextColumn Header="Mensagem" Binding="{Binding Mensagem}" Width="*"/>
-        </DataGrid.Columns>
-    </DataGrid>
+    <Border Margin="0" Background="{DynamicResource CorPainel}" BorderBrush="{DynamicResource CorBorda}" BorderThickness="1,0,1,1" CornerRadius="0">
+        <DataGrid ItemsSource="{Binding Linhas}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0" BorderThickness="0" Background="Transparent" HeadersVisibility="Column" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="{DynamicResource CorBorda}" VerticalGridLinesBrush="Transparent" RowHeaderWidth="0" CanUserAddRows="False" AlternatingRowBackground="{DynamicResource CorPainelClaro}" RowBackground="Transparent" EnableRowVirtualization="True">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Nivel}" Value="Info">
+                            <Setter Property="Background" Value="#0D1F3A"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Nivel}" Value="Aviso">
+                            <Setter Property="Background" Value="#2A2316"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Nivel}" Value="Erro">
+                            <Setter Property="Background" Value="#2D1A1A"/>
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource CorPainelClaro}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Quando" Binding="{Binding Quando, StringFormat=HH:mm:ss}" Width="90">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource CorTextoSecundario}"/>
+                            <Setter Property="Padding" Value="10,6"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTemplateColumn Header="Nível" Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border Margin="6,4" Padding="6,3" CornerRadius="6" HorizontalAlignment="Left" Width="60" VerticalAlignment="Center">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{DynamicResource CorAcento}"/>
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource CorTextoPrimario}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Nivel}" Value="Info">
+                                                <Setter Property="Background" Value="#163C66"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Nivel}" Value="Aviso">
+                                                <Setter Property="Background" Value="#6B4F15"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Nivel}" Value="Erro">
+                                                <Setter Property="Background" Value="#7A2D2D"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding Nivel}" HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="11"/>
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Mensagem" Binding="{Binding Mensagem}" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource CorTextoPrimario}"/>
+                            <Setter Property="Padding" Value="10,6"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Nivel}" Value="Aviso">
+                                    <Setter Property="Foreground" Value="#F6D48A"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Nivel}" Value="Erro">
+                                    <Setter Property="Foreground" Value="#F9A7A7"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Border>
 </UserControl>

@@ -4,7 +4,7 @@
         xmlns:views="clr-namespace:AppTunnel.Views"
         Title="AppTunnel" Height="600" Width="960" Icon="favicon.ico"
         Background="{DynamicResource CorFundo}" Foreground="{DynamicResource CorTextoPrimario}">
-    <TabControl Margin="4">
+    <TabControl Margin="0">
         <TabItem Header="Instâncias">
             <views:InstanciasView DataContext="{Binding Instancias}"/>
         </TabItem>

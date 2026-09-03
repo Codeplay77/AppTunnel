@@ -1,16 +1,18 @@
 <UserControl x:Class="AppTunnel.Views.ConexoesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DataGrid ItemsSource="{Binding Linhas}" AutoGenerateColumns="False" IsReadOnly="True" Margin="8">
-        <DataGrid.Columns>
-            <DataGridTextColumn Header="PID" Binding="{Binding Pid}"/>
-            <DataGridTextColumn Header="Porta local" Binding="{Binding PortaLocal}"/>
-            <DataGridTextColumn Header="Destino" Binding="{Binding Destino}"/>
-            <DataGridTextColumn Header="Estado" Binding="{Binding Estado}"/>
-            <DataGridTextColumn Header="↑ bytes" Binding="{Binding Enviados}"/>
-            <DataGridTextColumn Header="↓ bytes" Binding="{Binding Recebidos}"/>
-            <DataGridTextColumn Header="Duração" Binding="{Binding Duracao}"/>
-            <DataGridTextColumn Header="Proxy usado" Binding="{Binding ProxyUsado}"/>
-        </DataGrid.Columns>
-    </DataGrid>
+    <Border Margin="0" Background="{DynamicResource CorPainel}" BorderBrush="{DynamicResource CorBorda}" BorderThickness="1" CornerRadius="0">
+        <DataGrid ItemsSource="{Binding Linhas}" AutoGenerateColumns="False" IsReadOnly="True" Margin="0" BorderThickness="0" Background="Transparent">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="PID" Binding="{Binding Pid}"/>
+                <DataGridTextColumn Header="Porta local" Binding="{Binding PortaLocal}"/>
+                <DataGridTextColumn Header="Destino" Binding="{Binding Destino}"/>
+                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}"/>
+                <DataGridTextColumn Header="↑ bytes" Binding="{Binding Enviados}"/>
+                <DataGridTextColumn Header="↓ bytes" Binding="{Binding Recebidos}"/>
+                <DataGridTextColumn Header="Duração" Binding="{Binding Duracao}"/>
+                <DataGridTextColumn Header="Proxy usado" Binding="{Binding ProxyUsado}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Border>
 </UserControl>

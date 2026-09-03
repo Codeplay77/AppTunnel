@@ -3,43 +3,62 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Novo perfil" Height="640" Width="460"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="{DynamicResource CorFundo}" Foreground="{DynamicResource CorTextoPrimario}">
-    <DockPanel Margin="16">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Margin="0,12,0,0">
-            <Button Content="Cancelar" Width="90" Margin="0,0,8,0" Click="Cancelar_Click" IsCancel="True"/>
-            <Button Content="Salvar" Width="90" Click="Salvar_Click" IsDefault="True"/>
-        </StackPanel>
+        Background="{DynamicResource CorGradientePrincipal}" Foreground="{DynamicResource CorTextoPrimario}">
+    <Border Margin="16" Background="{DynamicResource CorPainel}" BorderBrush="{DynamicResource CorBorda}" BorderThickness="1" CornerRadius="18">
+        <DockPanel Margin="18">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Margin="0,16,0,0">
+                <Button Width="90" Margin="0,0,8,0" Click="Cancelar_Click" IsCancel="True" Style="{StaticResource BotaoBorda}">
+                    <TextBlock Text="Cancelar"/>
+                </Button>
+                <Button Width="90" Click="Salvar_Click" IsDefault="True" Style="{StaticResource BotaoSucesso}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="M0,5 L3,8 L8,0" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center"/>
+                        <TextBlock Text="Salvar" Margin="8,0,0,0"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
 
-        <ScrollViewer VerticalScrollBarVisibility="Hidden">
-            <StackPanel>
-                <TextBlock Text="Nome do perfil"/>
-                <TextBox x:Name="TxtNome" Margin="0,4,0,12"/>
+            <ScrollViewer VerticalScrollBarVisibility="Hidden">
+                <StackPanel>
+                    <TextBlock Text="Nome do perfil" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6"/>
+                    <TextBox x:Name="TxtNome" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Executável"/>
-                <DockPanel Margin="0,4,0,12">
-                    <Button Content="Procurar..." DockPanel.Dock="Right" Width="90" Click="ProcurarExe_Click"/>
-                    <TextBox x:Name="TxtExe" Margin="0,0,8,0"/>
-                </DockPanel>
+                    <TextBlock Text="Executável" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6"/>
+                    <DockPanel Margin="0,0,0,12">
+                        <Button DockPanel.Dock="Right" Width="96" Click="ProcurarExe_Click" Style="{StaticResource BotaoBorda}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M0,0 L0,8 M4,0 L4,8 M0,4 L8,4" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center"/>
+                                <TextBlock Text="Procurar..." Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <TextBox x:Name="TxtExe" Margin="0,0,8,0"/>
+                    </DockPanel>
 
-                <TextBlock Text="Argumentos (opcional)"/>
-                <TextBox x:Name="TxtArgs" Margin="0,4,0,12"/>
+                    <TextBlock Text="Argumentos (opcional)" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6"/>
+                    <TextBox x:Name="TxtArgs" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Diretório de trabalho"/>
-                <DockPanel Margin="0,4,0,12">
-                    <Button Content="Procurar..." DockPanel.Dock="Right" Width="90" Click="ProcurarDir_Click"/>
-                    <TextBox x:Name="TxtDir" Margin="0,0,8,0"/>
-                </DockPanel>
+                    <TextBlock Text="Diretório de trabalho" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6"/>
+                    <DockPanel Margin="0,0,0,12">
+                        <Button DockPanel.Dock="Right" Width="96" Click="ProcurarDir_Click" Style="{StaticResource BotaoBorda}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M0,0 L0,8 M4,0 L4,8 M0,4 L8,4" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center"/>
+                                <TextBlock Text="Procurar..." Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <TextBox x:Name="TxtDir" Margin="0,0,8,0"/>
+                    </DockPanel>
 
-                <TextBlock Text="Proxy principal"/>
-                <ComboBox x:Name="CmbProxyPrincipal" Margin="0,4,0,12" DisplayMemberPath="Rotulo"/>
+                    <TextBlock Text="Proxy principal" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6"/>
+                    <ComboBox x:Name="CmbProxyPrincipal" Margin="0,0,0,12" DisplayMemberPath="Rotulo"/>
 
-                <TextBlock Text="Proxies de reserva (opcional — Ctrl+clique pra selecionar vários)"/>
-                <ListBox x:Name="LstReservas" Height="90" SelectionMode="Multiple" DisplayMemberPath="Rotulo" Margin="0,4,0,12"/>
+                    <TextBlock Text="Proxies de reserva (opcional — Ctrl+clique para selecionar vários)" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6" TextWrapping="Wrap"/>
+                    <ListBox x:Name="LstReservas" Height="90" SelectionMode="Multiple" DisplayMemberPath="Rotulo" Margin="0,0,0,12"/>
 
-                <TextBlock Text="IPs de passthrough" TextWrapping="Wrap"/>
-                <TextBox x:Name="TxtPassthrough" Height="70" Margin="0,4,0,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
-				<TextBlock Text="Opcional, um por linha, sem espaços. Exemplo: 192.168.0.0/24:80-443" FontSize="10" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,2,0,12"/>
-			</StackPanel>
-        </ScrollViewer>
-    </DockPanel>
+                    <TextBlock Text="IPs de passthrough" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,0,0,6" TextWrapping="Wrap"/>
+                    <TextBox x:Name="TxtPassthrough" Height="70" Margin="0,0,0,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                    <TextBlock Text="Opcional, um por linha, sem espaços. Exemplo: 192.168.0.0/24:80-443" FontSize="10" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,4,0,12"/>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
 </Window>

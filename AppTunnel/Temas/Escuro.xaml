@@ -4,26 +4,38 @@
 
     <conv:ExibirMembroConverter x:Key="ExibirMembro"/>
 
-    <!-- Paleta -->
-    <SolidColorBrush x:Key="CorFundo" Color="#0D1B2A"/>
-    <SolidColorBrush x:Key="CorPainel" Color="#16233A"/>
-    <SolidColorBrush x:Key="CorPainelClaro" Color="#1F3049"/>
-    <SolidColorBrush x:Key="CorBorda" Color="#2E4258"/>
-    <SolidColorBrush x:Key="CorTextoPrimario" Color="#E6EAF0"/>
-    <SolidColorBrush x:Key="CorTextoSecundario" Color="#8FA3BF"/>
-    <SolidColorBrush x:Key="CorAcento" Color="#3D8BFD"/>
-    <SolidColorBrush x:Key="CorAcentoEscuro" Color="#2B65C9"/>
-    <SolidColorBrush x:Key="CorSelecao" Color="#28405C"/>
+    <!-- Paleta moderna -->
+    <SolidColorBrush x:Key="CorFundo" Color="#0B1220"/>
+    <SolidColorBrush x:Key="CorFundoSecundario" Color="#111A2B"/>
+    <SolidColorBrush x:Key="CorPainel" Color="#121F33"/>
+    <SolidColorBrush x:Key="CorPainelClaro" Color="#1A2D4A"/>
+    <SolidColorBrush x:Key="CorPainelSuave" Color="#21385F"/>
+    <SolidColorBrush x:Key="CorBorda" Color="#2F466A"/>
+    <SolidColorBrush x:Key="CorTextoPrimario" Color="#EAF2FF"/>
+    <SolidColorBrush x:Key="CorTextoSecundario" Color="#A9B9D5"/>
+    <SolidColorBrush x:Key="CorTextoMuted" Color="#7B8EAE"/>
+    <SolidColorBrush x:Key="CorAcento" Color="#60A5FA"/>
+    <SolidColorBrush x:Key="CorAcentoEscuro" Color="#3B82F6"/>
+    <SolidColorBrush x:Key="CorAcentoClaro" Color="#BFDBFE"/>
+    <SolidColorBrush x:Key="CorSelecao" Color="#1E3A5F"/>
+    <SolidColorBrush x:Key="CorSucesso" Color="#34D399"/>
+    <SolidColorBrush x:Key="CorAviso" Color="#FBBF24"/>
+    <SolidColorBrush x:Key="CorErro" Color="#F87171"/>
+
+    <LinearGradientBrush x:Key="CorGradientePrincipal" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#141F33" Offset="0"/>
+        <GradientStop Color="#0B1220" Offset="1"/>
+    </LinearGradientBrush>
 
     <!-- Base -->
     <Style TargetType="Window">
-        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="Background" Value="{StaticResource CorGradientePrincipal}"/>
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="FontFamily" Value="Segoe UI"/>
         <Setter Property="FontSize" Value="13"/>
     </Style>
     <Style TargetType="UserControl">
-        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="Background" Value="{StaticResource CorGradientePrincipal}"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource CorTextoPrimario}"/>
     </Style>
     <Style TargetType="TextBlock">
@@ -39,14 +51,17 @@
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="10,5"/>
+        <Setter Property="Padding" Value="12,7"/>
+        <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Bd" Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="4">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                           Margin="{TemplateBinding Padding}"/>
                     </Border>
@@ -67,25 +82,100 @@
         </Setter>
     </Style>
 
+    <Style x:Key="BotaoPrimario" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="{StaticResource CorAcento}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorAcentoEscuro}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CorAcentoEscuro}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BotaoSecundario" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+    </Style>
+
+    <Style x:Key="BotaoSucesso" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="#1F8F5F"/>
+        <Setter Property="BorderBrush" Value="#1F8F5F"/>
+        <Setter Property="Foreground" Value="#EAFEF5"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#2BB673"/>
+                <Setter Property="BorderBrush" Value="#2BB673"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BotaoPerigo" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="#C33E3E"/>
+        <Setter Property="BorderBrush" Value="#C33E3E"/>
+        <Setter Property="Foreground" Value="#FFF1F1"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#DB4A4A"/>
+                <Setter Property="BorderBrush" Value="#DB4A4A"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="BotaoBorda" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- TextBox -->
     <Style TargetType="TextBox">
         <Setter Property="Background" Value="{StaticResource CorPainel}"/>
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="6,4"/>
+        <Setter Property="Padding" Value="8,6"/>
         <Setter Property="CaretBrush" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="SelectionBrush" Value="{StaticResource CorAcento}"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBoxBase">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8" SnapsToDevicePixels="True">
+                        <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- ComboBox -->
     <Style TargetType="ComboBoxItem">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
-        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Padding" Value="10,7"/>
         <Style.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
                 <Setter Property="Background" Value="{StaticResource CorSelecao}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -95,20 +185,21 @@
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="8,5"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="MinHeight" Value="32"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="26"/>
                         </Grid.ColumnDefinitions>
                         <Border x:Name="Bd" Grid.ColumnSpan="2" Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4"/>
+                                CornerRadius="8"/>
                         <TextBlock Grid.Column="0" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"
-                                   IsHitTestVisible="False">
+                                   IsHitTestVisible="False" Foreground="{TemplateBinding Foreground}">
                             <TextBlock.Text>
                                 <MultiBinding Converter="{StaticResource ExibirMembro}">
                                     <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="SelectedItem"/>
@@ -120,7 +211,7 @@
                               HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"/>
                         <ToggleButton Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" BorderThickness="0"
                                       IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                      ClickMode="Press">
+                                      ClickMode="Press" Focusable="False">
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Border Background="Transparent"/>
@@ -130,7 +221,7 @@
                         <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom"
                                AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
                             <Border Background="{StaticResource CorPainel}" BorderBrush="{StaticResource CorBorda}"
-                                    BorderThickness="1" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                    BorderThickness="1" CornerRadius="8" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                                     MaxHeight="260">
                                 <ScrollViewer>
                                     <ItemsPresenter/>
@@ -138,6 +229,11 @@
                             </Border>
                         </Popup>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -146,16 +242,18 @@
     <!-- TabControl / TabItem -->
     <Style TargetType="TabItem">
         <Setter Property="Foreground" Value="{StaticResource CorTextoSecundario}"/>
-        <Setter Property="Padding" Value="14,8"/>
+        <Setter Property="Padding" Value="14,9"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
-                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="0,0,0,2" Margin="0,0,2,0">
+                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="0,0,0,2" Margin="0,0,4,0" CornerRadius="8,8,0,0">
                         <ContentPresenter ContentSource="Header" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource CorAcento}"/>
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource CorPainelClaro}"/>
                             <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -168,20 +266,23 @@
     </Style>
 
     <Style TargetType="TabControl">
-        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
-                    <DockPanel>
-                        <Border DockPanel.Dock="Top" Background="{StaticResource CorPainel}"
-                                BorderBrush="{StaticResource CorBorda}" BorderThickness="0,0,0,1">
-                            <TabPanel IsItemsHost="True" Margin="8,4,8,0"/>
+                    <Grid KeyboardNavigation.TabNavigation="Continue">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Background="{StaticResource CorPainel}" BorderBrush="{StaticResource CorBorda}" BorderThickness="0,0,0,1">
+                            <TabPanel IsItemsHost="True" Margin="10,8,10,0"/>
                         </Border>
-                        <Border Background="{StaticResource CorFundo}">
-                            <ContentPresenter ContentSource="SelectedContent"/>
+                        <Border Grid.Row="1" Background="{StaticResource CorGradientePrincipal}" BorderThickness="0">
+                            <ContentPresenter ContentSource="SelectedContent" Margin="0"/>
                         </Border>
-                    </DockPanel>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -189,32 +290,35 @@
 
     <!-- DataGrid -->
     <Style TargetType="DataGrid">
-        <Setter Property="Background" Value="{StaticResource CorFundo}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="RowBackground" Value="{StaticResource CorPainel}"/>
+        <Setter Property="RowBackground" Value="Transparent"/>
         <Setter Property="AlternatingRowBackground" Value="{StaticResource CorPainelClaro}"/>
         <Setter Property="GridLinesVisibility" Value="Horizontal"/>
         <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource CorBorda}"/>
-        <Setter Property="VerticalGridLinesBrush" Value="{StaticResource CorBorda}"/>
+        <Setter Property="VerticalGridLinesBrush" Value="Transparent"/>
         <Setter Property="HeadersVisibility" Value="Column"/>
         <Setter Property="CanUserAddRows" Value="False"/>
         <Setter Property="RowHeaderWidth" Value="0"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="EnableRowVirtualization" Value="True"/>
     </Style>
     <Style TargetType="DataGridColumnHeader">
         <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="0,0,1,1"/>
-        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Padding" Value="10,8"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
     </Style>
     <Style TargetType="DataGridCell">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="Padding" Value="10,7"/>
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource CorSelecao}"/>
@@ -224,6 +328,7 @@
     </Style>
     <Style TargetType="DataGridRow">
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
@@ -237,7 +342,7 @@
         <Setter Property="Background" Value="{StaticResource CorPainel}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="8"/>
+        <Setter Property="Padding" Value="12"/>
     </Style>
 
     <!-- ListBox -->
@@ -246,13 +351,18 @@
         <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
         <Setter Property="BorderBrush" Value="{StaticResource CorBorda}"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="4"/>
     </Style>
     <Style TargetType="ListBoxItem">
-        <Setter Property="Padding" Value="6,4"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource CorSelecao}"/>
                 <Setter Property="Foreground" Value="{StaticResource CorTextoPrimario}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource CorPainelClaro}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -262,7 +372,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Border Background="{StaticResource CorBorda}" CornerRadius="3" Margin="1"/>
+                    <Border Background="{StaticResource CorBorda}" CornerRadius="6" Margin="1"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
