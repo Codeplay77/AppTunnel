@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     <Platforms>x64</Platforms>
     <PlatformTarget>x64</PlatformTarget>
     <Nullable>enable</Nullable>
@@ -19,7 +20,7 @@
   <ItemGroup>
     <None Include="..\nativo\WinDivert.dll" Link="WinDivert.dll" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\nativo\WinDivert64.sys" Link="WinDivert64.sys" CopyToOutputDirectory="PreserveNewest" />
-    <Resource Include="favicon.ico" />
+    <Content Include="favicon.ico" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

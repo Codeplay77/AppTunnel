@@ -1,18 +1,26 @@
+using System.Drawing;
 using System.IO;
 using System.Windows;
+using WinForms = System.Windows.Forms;
 using AppTunnel.Motor;
+using AppTunnel.Modelos;
 using AppTunnel.Servicos;
 using AppTunnel.ViewModels;
 
 namespace AppTunnel;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     private MotorProxy? _motor;
+    private NotifyIcon? _notificacaoSilenciosa;
+    public static bool ModoSilencioso { get; private set; }
+    public static int? PerfilSolicitadoId { get; private set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        ParseArgumentos(e.Args);
 
         var telemetria = new Telemetria();
 
@@ -40,10 +48,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            // Falha aqui é sempre fatal pro motor (WinDivert sem admin, porta
-            // 34567 ocupada, etc.) — mostra o motivo em vez de estourar o
-            // diálogo padrão de exceção não tratada, e encerra limpo.
-            MessageBox.Show(ex.Message, "AppTunnel não conseguiu iniciar", MessageBoxButton.OK, MessageBoxImage.Error);
+            System.Windows.MessageBox.Show(ex.Message, "AppTunnel não conseguiu iniciar", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             Shutdown(1);
             return;
         }
@@ -56,12 +61,100 @@ public partial class App : Application
             new ProxiesViewModel(_motor, proxies, caminhoProxies, telemetria),
             new LogViewModel(telemetria));
 
-        new MainWindow { DataContext = vm }.Show();
+        var janela = new MainWindow { DataContext = vm };
+
+        if (PerfilSolicitadoId != null)
+        {
+            var perfil = perfis.FirstOrDefault(p => p.Id == PerfilSolicitadoId.Value);
+            if (perfil != null)
+            {
+                try
+                {
+                    var instanciaLancada = gerenciador.Lancar(perfil);
+                    if (ModoSilencioso)
+                        MonitorarEncerramentoSilencioso(instanciaLancada.Pid);
+                }
+                catch { }
+            }
+        }
+
+        if (!ModoSilencioso)
+        {
+            janela.Show();
+            return;
+        }
+
+        janela.ShowInTaskbar = false;
+        janela.WindowStartupLocation = WindowStartupLocation.Manual;
+        janela.Left = -32000;
+        janela.Top = -32000;
+        janela.Show();
+        janela.Hide();
+        ExibirNotificacaoSilenciosa();
     }
 
     protected override void OnExit(ExitEventArgs e)
     {
         _motor?.Dispose();
+        _notificacaoSilenciosa?.Dispose();
         base.OnExit(e);
+    }
+
+    private static void ParseArgumentos(string[] args)
+    {
+        if (args.Any(a => a.Equals("-silent", StringComparison.OrdinalIgnoreCase) || a.Equals("/silent", StringComparison.OrdinalIgnoreCase)))
+            ModoSilencioso = true;
+
+        foreach (var arg in args)
+        {
+            if (arg.StartsWith("-profile=", StringComparison.OrdinalIgnoreCase) || arg.StartsWith("/profile=", StringComparison.OrdinalIgnoreCase))
+            {
+                var valor = arg[(arg.IndexOf('=') + 1)..].Trim();
+                if (int.TryParse(valor, out var perfilId))
+                    PerfilSolicitadoId = perfilId;
+            }
+        }
+    }
+
+    private void ExibirNotificacaoSilenciosa()
+    {
+        _notificacaoSilenciosa = new WinForms.NotifyIcon
+        {
+            Visible = true,
+            Icon = ObterIconeFavicon(),
+            Text = "AppTunnel"
+        };
+
+        _notificacaoSilenciosa.ShowBalloonTip(5000, "AppTunnel", "Execução silenciosa ativada.", WinForms.ToolTipIcon.Info);
+        _notificacaoSilenciosa.Visible = false;
+    }
+
+    // encerra o AppTunnel junto quando o processo tunelado no modo silencioso termina —
+    // sem janela visível, não faria sentido o app continuar rodando sozinho
+    private void MonitorarEncerramentoSilencioso(uint pid)
+    {
+        try
+        {
+            var processo = System.Diagnostics.Process.GetProcessById((int)pid);
+            processo.EnableRaisingEvents = true;
+            processo.Exited += (_, _) => Dispatcher.Invoke(() => Shutdown());
+        }
+        catch
+        {
+            // processo pode já ter encerrado antes de conseguirmos monitorá-lo
+        }
+    }
+
+    internal static Icon ObterIconeFavicon()
+    {
+        try
+        {
+            var caminhoIcone = Path.Combine(AppContext.BaseDirectory, "favicon.ico");
+            if (File.Exists(caminhoIcone))
+                return new Icon(caminhoIcone);
+        }
+        catch { }
+
+        return SystemIcons.Application;
     }
 }

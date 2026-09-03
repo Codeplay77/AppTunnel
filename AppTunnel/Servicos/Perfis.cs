@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using AppTunnel.Modelos;
 
@@ -22,7 +23,15 @@ internal static class Perfis
         if (!File.Exists(caminho)) return new List<Perfil>();
         var json = File.ReadAllText(caminho);
         var raiz = JsonSerializer.Deserialize<Raiz>(json, Opcoes);
-        return raiz?.Perfis ?? new List<Perfil>();
+        var perfis = raiz?.Perfis ?? new List<Perfil>();
+
+        for (var indice = 0; indice < perfis.Count; indice++)
+        {
+            if (perfis[indice].Id <= 0)
+                perfis[indice].Id = indice + 1;
+        }
+
+        return perfis;
     }
 
     public static void Salvar(string caminho, IReadOnlyList<Perfil> perfis)
@@ -30,7 +39,19 @@ internal static class Perfis
         var diretorio = Path.GetDirectoryName(caminho);
         if (!string.IsNullOrEmpty(diretorio)) Directory.CreateDirectory(diretorio);
 
-        var raiz = new Raiz { Perfis = perfis.ToList() };
+        var lista = perfis.ToList();
+        var proximoId = ProximoId(lista);
+        foreach (var perfil in lista)
+        {
+            // preserva o ID definido no diálogo (inclusive editado manualmente) —
+            // só atribui um novo quando o perfil ainda não tem um
+            if (perfil.Id <= 0)
+                perfil.Id = proximoId++;
+        }
+
+        var raiz = new Raiz { Perfis = lista };
         File.WriteAllText(caminho, JsonSerializer.Serialize(raiz, Opcoes));
     }
+
+    public static int ProximoId(IReadOnlyList<Perfil> perfis) => perfis.Count > 0 ? perfis.Max(p => p.Id) + 1 : 1;
 }

@@ -17,3 +17,9 @@ Webshare*.txt
 # Memória de projeto/instruções — uso interno, não vai pro repo público.
 CLAUDE.md
 PROJETO.md
+AGENTS.md
+.windsurf/rules/caveman.md
+.opencode/AGENTS.md
+.github/copilot-instructions.md
+.cursor/rules/caveman.mdc
+.clinerules/caveman.md

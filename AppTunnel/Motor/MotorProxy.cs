@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Timer = System.Threading.Timer;
 using AppTunnel.Interop;
 using AppTunnel.Modelos;
 using AppTunnel.Servicos;

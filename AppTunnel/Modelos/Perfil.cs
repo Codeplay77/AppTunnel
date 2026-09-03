@@ -2,6 +2,7 @@ namespace AppTunnel.Modelos;
 
 internal sealed class Perfil
 {
+    public int Id { get; set; }
     public required string Nome { get; init; }
     public required string Exe { get; init; }
     public string Args { get; init; } = "";

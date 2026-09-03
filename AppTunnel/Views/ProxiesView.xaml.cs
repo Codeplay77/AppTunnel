@@ -1,8 +1,8 @@
-using System.Windows.Controls;
+using WpfUserControl = System.Windows.Controls.UserControl;
 
 namespace AppTunnel.Views;
 
-public partial class ProxiesView : UserControl
+public partial class ProxiesView : WpfUserControl
 {
     public ProxiesView()
     {

@@ -1,11 +1,15 @@
 using System.Windows;
-using System.Windows.Controls;
+using WpfUserControl = System.Windows.Controls.UserControl;
+using WpfMessageBox = System.Windows.MessageBox;
+using WpfMessageBoxButton = System.Windows.MessageBoxButton;
+using WpfMessageBoxImage = System.Windows.MessageBoxImage;
+using WpfMessageBoxResult = System.Windows.MessageBoxResult;
 using AppTunnel.Modelos;
 using AppTunnel.ViewModels;
 
 namespace AppTunnel.Views;
 
-public partial class InstanciasView : UserControl
+public partial class InstanciasView : WpfUserControl
 {
     public InstanciasView()
     {
@@ -16,7 +20,7 @@ public partial class InstanciasView : UserControl
     {
         if (DataContext is not InstanciasViewModel vm) return;
 
-        var dialogo = new NovoPerfilWindow(vm.ProxiesDisponiveis) { Owner = Window.GetWindow(this) };
+        var dialogo = new NovoPerfilWindow(vm.ProxiesDisponiveis, vm.Perfis) { Owner = Window.GetWindow(this) };
         if (dialogo.ShowDialog() == true && dialogo.Resultado != null)
             vm.AdicionarPerfil(dialogo.Resultado);
     }
@@ -26,11 +30,11 @@ public partial class InstanciasView : UserControl
         if (DataContext is not InstanciasViewModel vm) return;
         if (vm.PerfilSelecionado is not Perfil perfilAtual)
         {
-            MessageBox.Show(Window.GetWindow(this), "Selecione um perfil para editar.", "AppTunnel", MessageBoxButton.OK, MessageBoxImage.Warning);
+            WpfMessageBox.Show(Window.GetWindow(this), "Selecione um perfil para editar.", "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
             return;
         }
 
-        var dialogo = new NovoPerfilWindow(vm.ProxiesDisponiveis, perfilAtual) { Owner = Window.GetWindow(this) };
+        var dialogo = new NovoPerfilWindow(vm.ProxiesDisponiveis, vm.Perfis, perfilAtual) { Owner = Window.GetWindow(this) };
         if (dialogo.ShowDialog() == true && dialogo.Resultado != null)
             vm.AtualizarPerfil(perfilAtual, dialogo.Resultado);
     }
@@ -40,13 +44,13 @@ public partial class InstanciasView : UserControl
         if (DataContext is not InstanciasViewModel vm) return;
         if (vm.PerfilSelecionado is not Perfil perfilAtual)
         {
-            MessageBox.Show(Window.GetWindow(this), "Selecione um perfil para remover.", "AppTunnel", MessageBoxButton.OK, MessageBoxImage.Warning);
+            WpfMessageBox.Show(Window.GetWindow(this), "Selecione um perfil para remover.", "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
             return;
         }
 
-        var resposta = MessageBox.Show(Window.GetWindow(this), $"Remover o perfil \"{perfilAtual.Nome}\"?",
-            "AppTunnel", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (resposta == MessageBoxResult.Yes)
+        var resposta = WpfMessageBox.Show(Window.GetWindow(this), $"Remover o perfil \"{perfilAtual.Nome}\"?",
+            "AppTunnel", WpfMessageBoxButton.YesNo, WpfMessageBoxImage.Question);
+        if (resposta == WpfMessageBoxResult.Yes)
             vm.RemoverPerfil(perfilAtual);
     }
 }

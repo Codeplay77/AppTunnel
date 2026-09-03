@@ -2,9 +2,14 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Interop;
-using Microsoft.Win32;
+using WpfOpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using WpfOpenFolderDialog = Microsoft.Win32.OpenFolderDialog;
+using WpfMessageBox = System.Windows.MessageBox;
+using WpfMessageBoxButton = System.Windows.MessageBoxButton;
+using WpfMessageBoxImage = System.Windows.MessageBoxImage;
 using AppTunnel.Interop;
 using AppTunnel.Modelos;
+using AppTunnel.Servicos;
 
 namespace AppTunnel.Views;
 
@@ -17,10 +22,16 @@ public partial class NovoPerfilWindow : Window
 
     internal Perfil? Resultado { get; private set; }
 
-    internal NovoPerfilWindow(IReadOnlyList<ProxyCfg> proxiesDisponiveis, Perfil? perfilExistente = null)
+    private readonly IReadOnlyList<Perfil> _perfisExistentes;
+    private readonly int? _idOriginal;
+
+    internal NovoPerfilWindow(IReadOnlyList<ProxyCfg> proxiesDisponiveis, IReadOnlyList<Perfil> perfisExistentes, Perfil? perfilExistente = null)
     {
         InitializeComponent();
         SourceInitialized += (_, _) => Dwm.AtivarTituloEscuro(new WindowInteropHelper(this).Handle);
+
+        _perfisExistentes = perfisExistentes;
+        _idOriginal = perfilExistente?.Id;
 
         var itens = proxiesDisponiveis.Select((p, i) => new ItemProxy(i, p)).ToList();
         CmbProxyPrincipal.ItemsSource = itens;
@@ -29,6 +40,7 @@ public partial class NovoPerfilWindow : Window
         if (perfilExistente != null)
         {
             Title = "Editar perfil";
+            TxtId.Text = perfilExistente.Id.ToString();
             TxtNome.Text = perfilExistente.Nome;
             TxtExe.Text = perfilExistente.Exe;
             TxtArgs.Text = perfilExistente.Args;
@@ -42,15 +54,17 @@ public partial class NovoPerfilWindow : Window
                 if (perfilExistente.Reservas.Contains(item.Indice))
                     LstReservas.SelectedItems.Add(item);
         }
-        else if (itens.Count > 0)
+        else
         {
-            CmbProxyPrincipal.SelectedIndex = 0;
+            TxtId.Text = Perfis.ProximoId(perfisExistentes).ToString();
+            if (itens.Count > 0)
+                CmbProxyPrincipal.SelectedIndex = 0;
         }
     }
 
     private void ProcurarExe_Click(object sender, RoutedEventArgs e)
     {
-        var dialogo = new OpenFileDialog { Filter = "Executáveis (*.exe)|*.exe|Todos os arquivos (*.*)|*.*" };
+        var dialogo = new WpfOpenFileDialog { Filter = "Executáveis (*.exe)|*.exe|Todos os arquivos (*.*)|*.*" };
         if (dialogo.ShowDialog(this) == true)
         {
             TxtExe.Text = dialogo.FileName;
@@ -61,7 +75,7 @@ public partial class NovoPerfilWindow : Window
 
     private void ProcurarDir_Click(object sender, RoutedEventArgs e)
     {
-        var dialogo = new OpenFolderDialog();
+        var dialogo = new WpfOpenFolderDialog();
         if (dialogo.ShowDialog(this) == true)
             TxtDir.Text = dialogo.FolderName;
     }
@@ -70,14 +84,24 @@ public partial class NovoPerfilWindow : Window
 
     private void Salvar_Click(object sender, RoutedEventArgs e)
     {
+        if (!int.TryParse(TxtId.Text.Trim(), out var idInformado) || idInformado <= 0)
+        {
+            WpfMessageBox.Show(this, "Informe um ID de perfil válido (número inteiro maior que zero).", "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
+            return;
+        }
+        if (idInformado != _idOriginal && _perfisExistentes.Any(p => p.Id == idInformado))
+        {
+            WpfMessageBox.Show(this, $"Já existe um perfil com o ID {idInformado}.", "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
+            return;
+        }
         if (string.IsNullOrWhiteSpace(TxtNome.Text) || string.IsNullOrWhiteSpace(TxtExe.Text))
         {
-            MessageBox.Show(this, "Nome e executável são obrigatórios.", "AppTunnel", MessageBoxButton.OK, MessageBoxImage.Warning);
+            WpfMessageBox.Show(this, "Nome e executável são obrigatórios.", "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
             return;
         }
         if (CmbProxyPrincipal.SelectedItem is not ItemProxy principal)
         {
-            MessageBox.Show(this, "Selecione um proxy principal.", "AppTunnel", MessageBoxButton.OK, MessageBoxImage.Warning);
+            WpfMessageBox.Show(this, "Selecione um proxy principal.", "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
             return;
         }
 
@@ -93,8 +117,8 @@ public partial class NovoPerfilWindow : Window
             if (item.Length == 0) continue;
             if (!FaixaIp.TentarAnalisar(item, out _))
             {
-                MessageBox.Show(this, $"IP de passthrough inválido: \"{item}\".\nUse um IP (1.2.3.4), CIDR (1.2.3.0/24) ou faixa (1.2.3.4-1.2.3.10), com porta opcional (ex.: 1.2.3.4:80 ou 1.2.3.4:80-443).",
-                    "AppTunnel", MessageBoxButton.OK, MessageBoxImage.Warning);
+                WpfMessageBox.Show(this, $"IP de passthrough inválido: \"{item}\".\nUse um IP (1.2.3.4), CIDR (1.2.3.0/24) ou faixa (1.2.3.4-1.2.3.10), com porta opcional (ex.: 1.2.3.4:80 ou 1.2.3.4:80-443).",
+                    "AppTunnel", WpfMessageBoxButton.OK, WpfMessageBoxImage.Warning);
                 return;
             }
             ipsPassthrough.Add(item);
@@ -102,6 +126,7 @@ public partial class NovoPerfilWindow : Window
 
         Resultado = new Perfil
         {
+            Id = idInformado,
             Nome = TxtNome.Text.Trim(),
             Exe = TxtExe.Text.Trim(),
             Args = TxtArgs.Text.Trim(),
