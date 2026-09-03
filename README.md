@@ -107,6 +107,76 @@ Escrito pela própria UI; os índices apontam para linhas de `proxies.txt`.
 
 `config/` está no `.gitignore` — credenciais reais nunca vão para o repositório.
 
+## Execução em linha de comando
+
+O app pode ser lançado em modo silencioso (sem janela visível) e com um perfil específico:
+
+```powershell
+AppTunnel.exe -silent -profile=1
+```
+
+Ou com a variante alternativa:
+
+```powershell
+AppTunnel.exe /silent /profile=1
+```
+
+- `-silent` (ou `/silent`): inicia sem exibir a janela principal; o app roda em segundo plano e exibe uma notificação do Windows.
+- `-profile=ID` (ou `/profile=ID`): lança automaticamente o perfil com o ID especificado (número inteiro).
+- Ambas as opções podem ser usadas juntas ou separadamente.
+
+No modo silencioso, se o processo lançado pelo perfil encerrar, o AppTunnel também fecha automaticamente (nenhuma interface visível para fechar manualmente).
+
+## Sistema de bandeja
+
+Quando a janela está visível e você clica no botão **Fechar** (X no canto superior direito), a aplicação é minimizada para a bandeja do sistema em vez de encerrar. Um clique duplo no ícone da bandeja restaura a janela.
+
+Para sair de verdade, use o item **Sair** no menu de contexto da bandeja (clique direito no ícone).
+
+## Perfis e IDs
+
+Cada perfil possui um **ID único** que pode ser:
+
+- Gerado automaticamente (próximo número inteiro disponível).
+- Definido manualmente no diálogo "Novo perfil".
+
+O ID permite lançar um perfil específico via CLI (`-profile=ID`). Ao editar um perfil existente, o ID não pode ser alterado para um valor que já existe em outro perfil.
+
+## Execução em linha de comando
+
+O app pode ser lançado em modo silencioso (sem janela visível) e com um perfil específico:
+
+```powershell
+AppTunnel.exe -silent -profile=1
+```
+
+Ou com a variante alternativa:
+
+```powershell
+AppTunnel.exe /silent /profile=1
+```
+
+- `-silent` (ou `/silent`): inicia sem exibir a janela principal; o app roda em segundo plano e exibe uma notificação do Windows.
+- `-profile=ID` (ou `/profile=ID`): lança automaticamente o perfil com o ID especificado (número inteiro).
+- Ambas as opções podem ser usadas juntas ou separadamente.
+
+No modo silencioso, se o processo lançado pelo perfil encerrar, o AppTunnel também fecha automaticamente (nenhuma interface visível para fechar manualmente).
+
+## Sistema de bandeja
+
+Quando a janela está visível e você clica no botão **Fechar** (X no canto superior direito), a aplicação é minimizada para a bandeja do sistema em vez de encerrar. Um clique duplo no ícone da bandeja restaura a janela.
+
+Para sair de verdade, use o item **Sair** no menu de contexto da bandeja (clique direito no ícone).
+
+## Perfis e IDs
+
+Cada perfil possui um **ID único** que pode ser:
+
+- Gerado automaticamente (próximo número inteiro disponível).
+- Definido manualmente no diálogo "Novo perfil".
+
+O ID permite lançar um perfil específico via CLI (`-profile=ID`). Ao editar um perfil existente, o ID não pode ser alterado para um valor que já existe em outro perfil.
+
 ## Regra de firewall (obrigatória)
 
 Crie uma regra de **saída** no Firewall do Windows bloqueando o executável alvo
@@ -123,8 +193,9 @@ funcionando normalmente.
 
 ## Interface
 
-Quatro abas WPF, atualizadas por polling (500 ms) sobre coleções concorrentes do
-motor — as threads do WinDivert nunca são bloqueadas para notificar a UI.
+Quatro abas WPF com design moderno (Material Design inspired), atualizadas por polling (500 ms) sobre coleções concorrentes do motor — as threads do WinDivert nunca são bloqueadas para notificar a UI.
+
+### Abas
 
 - **Instâncias** — nome, PID, proxy ativo, conexões ativas, bytes ↑↓, estado.
   Lançar, encerrar e trocar de proxy (permitido só com zero conexões ativas, para
