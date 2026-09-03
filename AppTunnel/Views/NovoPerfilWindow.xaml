@@ -1,37 +1,45 @@
 <Window x:Class="AppTunnel.Views.NovoPerfilWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Novo perfil" Height="517" Width="460"
+        Title="Novo perfil" Height="640" Width="460"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         Background="{DynamicResource CorFundo}" Foreground="{DynamicResource CorTextoPrimario}">
-    <StackPanel Margin="16">
-        <TextBlock Text="Nome"/>
-        <TextBox x:Name="TxtNome" Margin="0,4,0,12"/>
-
-        <TextBlock Text="Executável"/>
-        <DockPanel Margin="0,4,0,12">
-            <Button Content="Procurar..." DockPanel.Dock="Right" Width="90" Click="ProcurarExe_Click"/>
-            <TextBox x:Name="TxtExe" Margin="0,0,8,0"/>
-        </DockPanel>
-
-        <TextBlock Text="Argumentos (opcional)"/>
-        <TextBox x:Name="TxtArgs" Margin="0,4,0,12"/>
-
-        <TextBlock Text="Diretório de trabalho"/>
-        <DockPanel Margin="0,4,0,12">
-            <Button Content="Procurar..." DockPanel.Dock="Right" Width="90" Click="ProcurarDir_Click"/>
-            <TextBox x:Name="TxtDir" Margin="0,0,8,0"/>
-        </DockPanel>
-
-        <TextBlock Text="Proxy principal"/>
-        <ComboBox x:Name="CmbProxyPrincipal" Margin="0,4,0,12" DisplayMemberPath="Rotulo"/>
-
-        <TextBlock Text="Proxies de reserva (opcional — Ctrl+clique pra selecionar vários)"/>
-        <ListBox x:Name="LstReservas" Height="90" SelectionMode="Multiple" DisplayMemberPath="Rotulo" Margin="0,4,0,12"/>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+    <DockPanel Margin="16">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Margin="0,12,0,0">
             <Button Content="Cancelar" Width="90" Margin="0,0,8,0" Click="Cancelar_Click" IsCancel="True"/>
             <Button Content="Salvar" Width="90" Click="Salvar_Click" IsDefault="True"/>
         </StackPanel>
-    </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Hidden">
+            <StackPanel>
+                <TextBlock Text="Nome do perfil"/>
+                <TextBox x:Name="TxtNome" Margin="0,4,0,12"/>
+
+                <TextBlock Text="Executável"/>
+                <DockPanel Margin="0,4,0,12">
+                    <Button Content="Procurar..." DockPanel.Dock="Right" Width="90" Click="ProcurarExe_Click"/>
+                    <TextBox x:Name="TxtExe" Margin="0,0,8,0"/>
+                </DockPanel>
+
+                <TextBlock Text="Argumentos (opcional)"/>
+                <TextBox x:Name="TxtArgs" Margin="0,4,0,12"/>
+
+                <TextBlock Text="Diretório de trabalho"/>
+                <DockPanel Margin="0,4,0,12">
+                    <Button Content="Procurar..." DockPanel.Dock="Right" Width="90" Click="ProcurarDir_Click"/>
+                    <TextBox x:Name="TxtDir" Margin="0,0,8,0"/>
+                </DockPanel>
+
+                <TextBlock Text="Proxy principal"/>
+                <ComboBox x:Name="CmbProxyPrincipal" Margin="0,4,0,12" DisplayMemberPath="Rotulo"/>
+
+                <TextBlock Text="Proxies de reserva (opcional — Ctrl+clique pra selecionar vários)"/>
+                <ListBox x:Name="LstReservas" Height="90" SelectionMode="Multiple" DisplayMemberPath="Rotulo" Margin="0,4,0,12"/>
+
+                <TextBlock Text="IPs de passthrough" TextWrapping="Wrap"/>
+                <TextBox x:Name="TxtPassthrough" Height="70" Margin="0,4,0,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+				<TextBlock Text="Opcional, um por linha, sem espaços. Exemplo: 192.168.0.0/24:80-443" FontSize="10" Foreground="{DynamicResource CorTextoSecundario}" Margin="0,2,0,12"/>
+			</StackPanel>
+        </ScrollViewer>
+    </DockPanel>
 </Window>

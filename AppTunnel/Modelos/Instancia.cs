@@ -7,6 +7,9 @@ internal sealed class Instancia
     public required IntPtr HandleProcesso { get; init; }
     public required IReadOnlyList<ProxyCfg> Proxies { get; init; }
 
+    // Faixas de IP que devem passar direto (sem proxy) pra este processo.
+    public IReadOnlyList<FaixaIp> FaixasPassthrough { get; init; } = Array.Empty<FaixaIp>();
+
     public int Indice; // Proxies[Indice] = proxy ativo
     public int ConexoesAtivas;
     public int Falhas;

@@ -50,18 +50,40 @@ internal sealed class InstanciasViewModel : ObservableObject
     public void AdicionarPerfil(Perfil perfil)
     {
         Perfis.Add(perfil);
+        SalvarPerfis("adicionado");
+    }
+
+    public void AtualizarPerfil(Perfil antigo, Perfil novo)
+    {
+        var indice = Perfis.IndexOf(antigo);
+        if (indice < 0) return;
+
+        Perfis[indice] = novo;
+        if (ReferenceEquals(PerfilSelecionado, antigo)) PerfilSelecionado = novo;
+        SalvarPerfis("atualizado");
+    }
+
+    public void RemoverPerfil(Perfil perfil)
+    {
+        if (!Perfis.Remove(perfil)) return;
+
+        if (ReferenceEquals(PerfilSelecionado, perfil)) PerfilSelecionado = null;
+        SalvarPerfis("removido");
+    }
+
+    private void SalvarPerfis(string acao)
+    {
         try
         {
             AppTunnel.Servicos.Perfis.Salvar(_caminhoPerfis, Perfis.ToList());
         }
         catch (Exception ex)
         {
-            // O perfil fica disponível nesta sessão (já entrou na coleção
-            // acima) mesmo que gravar em disco falhe — mas isso nunca pode
-            // falhar em silêncio, senão o usuário perde o perfil no próximo
-            // reinício sem saber por quê.
+            // A coleção em memória já reflete a mudança mesmo que gravar em
+            // disco falhe — mas isso nunca pode falhar em silêncio, senão o
+            // usuário perde a alteração no próximo reinício sem saber por quê.
             System.Windows.MessageBox.Show(
-                $"Perfil adicionado, mas não consegui salvar em '{_caminhoPerfis}':\n{ex.Message}",
+                $"Perfil {acao}, mas não consegui salvar em '{_caminhoPerfis}':\n{ex.Message}",
                 "AppTunnel", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
         }
     }

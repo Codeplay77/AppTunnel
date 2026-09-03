@@ -26,10 +26,15 @@ internal sealed class GerenciadorInstancias
         foreach (var indice in perfil.Reservas)
             lista.Add(ResolverProxy(indice));
 
-        var instancia = _motor.Lancar(perfil.Exe, perfil.Args, perfil.Dir, perfil.Nome, lista);
+        var faixasPassthrough = new List<FaixaIp>();
+        foreach (var texto in perfil.IpsPassthrough)
+            if (FaixaIp.TentarAnalisar(texto, out var faixa)) faixasPassthrough.Add(faixa);
+
+        var instancia = _motor.Lancar(perfil.Exe, perfil.Args, perfil.Dir, perfil.Nome, lista, faixasPassthrough: faixasPassthrough);
         _telemetria.Registrar(NivelLog.Info, $"Instância '{perfil.Nome}' lançada, PID={instancia.Pid}, proxy={instancia.ProxyAtual.Host}:{instancia.ProxyAtual.Porta}");
         return instancia;
     }
+
 
     private ProxyCfg ResolverProxy(int indice)
     {

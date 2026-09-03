@@ -33,7 +33,7 @@ internal sealed class MotorProxy : IDisposable
         // Handle da CamadaSocket só abre quando houver PID alvo — ver
         // AtualizarFiltro em Lancar/Encerrar.
         _camadaSocket = new CamadaSocket(_instancias, _conexoes, _telemetria);
-        _camadaRede = new CamadaRede(_conexoes, _telemetria);
+        _camadaRede = new CamadaRede(_instancias, _conexoes, _telemetria);
 
         _varredura = new Timer(_ => Varrer(), null, 1000, 1000);
     }
@@ -43,7 +43,7 @@ internal sealed class MotorProxy : IDisposable
 
     // CREATE_SUSPENDED -> registra vínculo -> ResumeThread. Nenhum pacote do
     // processo pode preceder o registro em _instancias (invariante 1).
-    public Instancia Lancar(string caminhoExe, string argumentos, string diretorio, string nome, IReadOnlyList<ProxyCfg> proxies, int proxyInicial = 0)
+    public Instancia Lancar(string caminhoExe, string argumentos, string diretorio, string nome, IReadOnlyList<ProxyCfg> proxies, int proxyInicial = 0, IReadOnlyList<FaixaIp>? faixasPassthrough = null)
     {
         if (proxies.Count == 0)
             throw new ArgumentException("Instância sem proxy configurado", nameof(proxies));
@@ -66,6 +66,7 @@ internal sealed class MotorProxy : IDisposable
             HandleProcesso = pi.hProcess,
             Proxies = proxies,
             Indice = proxyInicial,
+            FaixasPassthrough = faixasPassthrough ?? Array.Empty<FaixaIp>(),
         };
 
         _instancias[instancia.Pid] = instancia;

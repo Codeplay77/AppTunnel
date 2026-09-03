@@ -3,11 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8">
-            <ComboBox Width="220" ItemsSource="{Binding Perfis}" DisplayMemberPath="Nome"
-                      SelectedItem="{Binding PerfilSelecionado}" Margin="0,0,8,0"/>
+            <ComboBox Width="220" ItemsSource="{Binding Perfis}" DisplayMemberPath="Nome" SelectedItem="{Binding PerfilSelecionado}" Margin="0,0,8,0"/>
             <Button Content="Lançar" Command="{Binding ComandoLancar}" Width="90" Margin="0,0,8,0"/>
             <Button Content="Encerrar" Command="{Binding ComandoEncerrar}" Width="90" Margin="0,0,8,0"/>
-            <Button Content="Novo perfil..." Click="NovoPerfil_Click" Width="110"/>
+            <Button Content="Novo perfil..." Click="NovoPerfil_Click" Width="110" Margin="0,0,8,0"/>
+            <Button Content="Editar perfil..." Click="EditarPerfil_Click" Width="110" Margin="0,0,8,0"/>
+            <Button Content="Remover perfil" Click="RemoverPerfil_Click" Width="110"/>
         </StackPanel>
         <DataGrid ItemsSource="{Binding Linhas}" SelectedItem="{Binding LinhaSelecionada}"
                   AutoGenerateColumns="False" IsReadOnly="True" Margin="8">

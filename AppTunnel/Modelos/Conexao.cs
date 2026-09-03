@@ -11,6 +11,10 @@ internal sealed class Conexao
     public uint IpDestino;
     public ushort PortaDestino;
 
+    // true quando IpDestino cai numa faixa de passthrough do perfil — a
+    // CamadaRede para de reescrever os pacotes desta conexão.
+    public bool Passthrough;
+
     public readonly long CriadaEm = Environment.TickCount64;
     public long Enviados;
     public long Recebidos;

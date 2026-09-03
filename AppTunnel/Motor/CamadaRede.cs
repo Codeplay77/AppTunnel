@@ -27,13 +27,15 @@ internal sealed class CamadaRede
 
     private readonly IntPtr _handle;
     private readonly Thread _thread;
+    private readonly ConcurrentDictionary<uint, Instancia> _instancias;
     private readonly ConcurrentDictionary<ushort, Conexao> _conexoes;
     private readonly Telemetria _telemetria;
     private readonly byte[] _enderecoLocal; // IPv4 desta máquina, 4 bytes, ordem de rede
     private volatile bool _executando;
 
-    public CamadaRede(ConcurrentDictionary<ushort, Conexao> conexoes, Telemetria telemetria)
+    public CamadaRede(ConcurrentDictionary<uint, Instancia> instancias, ConcurrentDictionary<ushort, Conexao> conexoes, Telemetria telemetria)
     {
+        _instancias = instancias;
         _conexoes = conexoes;
         _telemetria = telemetria;
         _enderecoLocal = DescobrirEnderecoLocal();
@@ -159,9 +161,16 @@ internal sealed class CamadaRede
             // e não carregam mais o destino real.
             if (conexao.IpDestino == 0)
             {
-                conexao.IpDestino = (uint)((pacote[16] << 24) | (pacote[17] << 16) | (pacote[18] << 8) | pacote[19]);
-                conexao.PortaDestino = (ushort)((pacote[offsetTcp + 2] << 8) | pacote[offsetTcp + 3]);
+                var ipDestino = (uint)((pacote[16] << 24) | (pacote[17] << 16) | (pacote[18] << 8) | pacote[19]);
+                var portaDestino = (ushort)((pacote[offsetTcp + 2] << 8) | pacote[offsetTcp + 3]);
+                conexao.IpDestino = ipDestino;
+                conexao.PortaDestino = portaDestino;
+                conexao.Passthrough = EhPassthrough(conexao.Pid, ipDestino, portaDestino);
             }
+
+            // Destino cai numa faixa de passthrough do perfil: deixa o pacote
+            // seguir intocado, sem redirecionar pro RelaySocks5.
+            if (conexao.Passthrough) return false;
 
             pacote[16] = _enderecoLocal[0]; pacote[17] = _enderecoLocal[1];
             pacote[18] = _enderecoLocal[2]; pacote[19] = _enderecoLocal[3];
@@ -184,6 +193,16 @@ internal sealed class CamadaRede
             pacote[offsetTcp + 1] = (byte)conexao.PortaDestino;
             return true;
         }
+    }
+
+    private bool EhPassthrough(uint pid, uint ipDestino, ushort portaDestino)
+    {
+        if (!_instancias.TryGetValue(pid, out var instancia)) return false;
+
+        var faixas = instancia.FaixasPassthrough;
+        for (var i = 0; i < faixas.Count; i++)
+            if (faixas[i].Contem(ipDestino, portaDestino)) return true;
+        return false;
     }
 
     public void Parar()
