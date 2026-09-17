@@ -13,6 +13,8 @@ public partial class App : System.Windows.Application
 {
     private MotorProxy? _motor;
     private NotifyIcon? _notificacaoSilenciosa;
+    private MainWindow? _janela;
+    private bool _encerraSemInstancias;
     public static bool ModoSilencioso { get; private set; }
     public static int? PerfilSolicitadoId { get; private set; }
 
@@ -21,6 +23,14 @@ public partial class App : System.Windows.Application
         base.OnStartup(e);
 
         ParseArgumentos(e.Args);
+
+        if (HubComunicacao.TentarDelegar(PerfilSolicitadoId, mostrarJanela: !ModoSilencioso))
+        {
+            Shutdown();
+            return;
+        }
+
+        _encerraSemInstancias = ModoSilencioso;
 
         var telemetria = new Telemetria();
 
@@ -61,35 +71,27 @@ public partial class App : System.Windows.Application
             new ProxiesViewModel(_motor, proxies, caminhoProxies, telemetria),
             new LogViewModel(telemetria));
 
-        var janela = new MainWindow { DataContext = vm };
+        _janela = new MainWindow { DataContext = vm };
+
+        HubComunicacao.IniciarServidor(
+            aoLancar: id => Dispatcher.Invoke(() => LancarPerfilPorId(id, perfis, gerenciador)),
+            aoMostrar: () => Dispatcher.Invoke(MostrarJanela));
 
         if (PerfilSolicitadoId != null)
-        {
-            var perfil = perfis.FirstOrDefault(p => p.Id == PerfilSolicitadoId.Value);
-            if (perfil != null)
-            {
-                try
-                {
-                    var instanciaLancada = gerenciador.Lancar(perfil);
-                    if (ModoSilencioso)
-                        MonitorarEncerramentoSilencioso(instanciaLancada.Pid);
-                }
-                catch { }
-            }
-        }
+            LancarPerfilPorId(PerfilSolicitadoId.Value, perfis, gerenciador);
 
         if (!ModoSilencioso)
         {
-            janela.Show();
+            MostrarJanela();
             return;
         }
 
-        janela.ShowInTaskbar = false;
-        janela.WindowStartupLocation = WindowStartupLocation.Manual;
-        janela.Left = -32000;
-        janela.Top = -32000;
-        janela.Show();
-        janela.Hide();
+        _janela.ShowInTaskbar = false;
+        _janela.WindowStartupLocation = WindowStartupLocation.Manual;
+        _janela.Left = -32000;
+        _janela.Top = -32000;
+        _janela.Show();
+        _janela.Hide();
         ExibirNotificacaoSilenciosa();
     }
 
@@ -129,20 +131,56 @@ public partial class App : System.Windows.Application
         _notificacaoSilenciosa.Visible = false;
     }
 
-    // encerra o AppTunnel junto quando o processo tunelado no modo silencioso termina —
-    // sem janela visível, não faria sentido o app continuar rodando sozinho
-    private void MonitorarEncerramentoSilencioso(uint pid)
+    private void LancarPerfilPorId(int perfilId, IReadOnlyList<Perfil> perfis, GerenciadorInstancias gerenciador)
+    {
+        var perfil = perfis.FirstOrDefault(p => p.Id == perfilId);
+        if (perfil == null) return;
+
+        try
+        {
+            var instancia = gerenciador.Lancar(perfil);
+            MonitorarSaidaInstancia(instancia.Pid);
+        }
+        catch { /* falha já registrada na Telemetria */ }
+    }
+
+    private void MonitorarSaidaInstancia(uint pid)
     {
         try
         {
             var processo = System.Diagnostics.Process.GetProcessById((int)pid);
             processo.EnableRaisingEvents = true;
-            processo.Exited += (_, _) => Dispatcher.Invoke(() => Shutdown());
+            processo.Exited += (_, _) => Dispatcher.Invoke(() =>
+            {
+                _motor?.Encerrar(pid);
+                if (_encerraSemInstancias && _motor?.Instancias.Any() != true)
+                    Shutdown();
+            });
         }
         catch
         {
             // processo pode já ter encerrado antes de conseguirmos monitorá-lo
         }
+    }
+
+   private void MostrarJanela()
+    {
+        if (_janela == null) return;
+
+        _encerraSemInstancias = false;
+        if (_janela.Left <= -10000)
+        {
+            var area = SystemParameters.WorkArea;
+            _janela.WindowStartupLocation = WindowStartupLocation.Manual;
+            _janela.Left = area.Left + (area.Width - _janela.Width) / 2;
+            _janela.Top = area.Top + (area.Height - _janela.Height) / 2;
+        }
+
+        _janela.ShowInTaskbar = true;
+        _janela.Show();
+        if (_janela.WindowState == WindowState.Minimized)
+            _janela.WindowState = WindowState.Normal;
+        _janela.Activate();
     }
 
     internal static Icon ObterIconeFavicon()

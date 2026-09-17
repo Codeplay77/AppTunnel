@@ -31,19 +31,21 @@ internal sealed class CamadaRede
     private readonly ConcurrentDictionary<ushort, Conexao> _conexoes;
     private readonly Telemetria _telemetria;
     private readonly byte[] _enderecoLocal; // IPv4 desta máquina, 4 bytes, ordem de rede
+    private readonly ushort _portaRelay;
     private volatile bool _executando;
 
-    public CamadaRede(ConcurrentDictionary<uint, Instancia> instancias, ConcurrentDictionary<ushort, Conexao> conexoes, Telemetria telemetria)
+    public CamadaRede(ConcurrentDictionary<uint, Instancia> instancias, ConcurrentDictionary<ushort, Conexao> conexoes, Telemetria telemetria, ushort portaRelay)
     {
         _instancias = instancias;
         _conexoes = conexoes;
         _telemetria = telemetria;
+        _portaRelay = portaRelay;
         _enderecoLocal = DescobrirEnderecoLocal();
         var enderecoTexto = string.Join('.', _enderecoLocal);
 
         var filtro =
             "ip and tcp and outbound and " +
-            $"(ip.DstAddr != {enderecoTexto} or (ip.SrcAddr == {enderecoTexto} and tcp.SrcPort == {RelaySocks5.Porta}))";
+            $"(ip.DstAddr != {enderecoTexto} or (ip.SrcAddr == {enderecoTexto} and tcp.SrcPort == {_portaRelay}))";
 
         _handle = WinDivert.WinDivertOpen(filtro, CamadaWinDivert.Rede, 0, 0);
         if (_handle == new IntPtr(-1))
@@ -174,13 +176,13 @@ internal sealed class CamadaRede
 
             pacote[16] = _enderecoLocal[0]; pacote[17] = _enderecoLocal[1];
             pacote[18] = _enderecoLocal[2]; pacote[19] = _enderecoLocal[3];
-            pacote[offsetTcp + 2] = (byte)(RelaySocks5.Porta >> 8);
-            pacote[offsetTcp + 3] = unchecked((byte)RelaySocks5.Porta);
+            pacote[offsetTcp + 2] = (byte)(_portaRelay >> 8);
+            pacote[offsetTcp + 3] = unchecked((byte)_portaRelay);
             return true;
         }
         else
         {
-            // Perna RelaySocks5 -> cliente (só chega aqui com SrcPort==34567,
+            // Perna RelaySocks5 -> cliente (só chega aqui com SrcPort==_portaRelay,
             // garantido pelo filtro). Chave: TCP DstPort = porta local do cliente.
             var portaLocal = (ushort)((pacote[offsetTcp + 2] << 8) | pacote[offsetTcp + 3]);
             if (!_conexoes.TryGetValue(portaLocal, out var conexao)) return false;

@@ -34,7 +34,7 @@ internal sealed class MotorProxy : IDisposable
         // Handle da CamadaSocket só abre quando houver PID alvo — ver
         // AtualizarFiltro em Lancar/Encerrar.
         _camadaSocket = new CamadaSocket(_instancias, _conexoes, _telemetria);
-        _camadaRede = new CamadaRede(_instancias, _conexoes, _telemetria);
+        _camadaRede = new CamadaRede(_instancias, _conexoes, _telemetria, _relay.Porta);
 
         _varredura = new Timer(_ => Varrer(), null, 1000, 1000);
     }

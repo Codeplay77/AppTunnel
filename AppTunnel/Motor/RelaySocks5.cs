@@ -6,15 +6,17 @@ using AppTunnel.Servicos;
 
 namespace AppTunnel.Motor;
 
-// TcpListener em IPAddress.Any:34567 — a CamadaRede redireciona pro IP real
-// de saída da máquina, não pra 127.0.0.1, então o listener precisa aceitar
-// em qualquer interface. Isso expõe a porta à LAN se não houver firewall
-// bloqueando entrada nela.
+// TcpListener em IPAddress.Any:PortaBase (ou a próxima livre) — a CamadaRede
+// redireciona pro IP real de saída da máquina, não pra 127.0.0.1, então o
+// listener precisa aceitar em qualquer interface. Isso expõe a porta à LAN
+// se não houver firewall bloqueando entrada nela.
 internal sealed class RelaySocks5
 {
-    public const ushort Porta = 34567;
+    private const ushort PortaBase = 34567;
+    private const int MaxTentativasPorta = 100;
+    public ushort Porta { get; private set; }
 
-    private readonly TcpListener _listener;
+    private TcpListener _listener = null!;
     private readonly ConcurrentDictionary<uint, Instancia> _instancias;
     private readonly ConcurrentDictionary<ushort, Conexao> _conexoes;
     private readonly Telemetria _telemetria;
@@ -25,22 +27,34 @@ internal sealed class RelaySocks5
         _instancias = instancias;
         _conexoes = conexoes;
         _telemetria = telemetria;
-        _listener = new TcpListener(IPAddress.Any, Porta);
     }
 
     public void Iniciar()
     {
-        try
+        for (var i = 0; i < MaxTentativasPorta; i++)
         {
-            _listener.Start();
+            var porta = (ushort)(PortaBase + i);
+            var listener = new TcpListener(IPAddress.Any, porta);
+            try
+            {
+                listener.Start();
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
+            {
+                continue;
+            }
+            _listener = listener;
+            Porta = porta;
+            if (porta != PortaBase)
+                _telemetria.Registrar(NivelLog.Info, $"RelaySocks5: porta {PortaBase} em uso, usando {porta}");
+            _ = AceitarLoopAsync(_cts.Token);
+            return;
         }
-        catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
-        {
-            throw new InvalidOperationException(
-                $"Porta {Porta} já está em uso. Provavelmente outra instância do AppTunnel.exe ainda está rodando — " +
-                "feche-a (Gerenciador de Tarefas) antes de abrir uma nova.", ex);
-        }
-        _ = AceitarLoopAsync(_cts.Token);
+
+        throw new InvalidOperationException(
+            $"Nenhuma porta livre encontrada na faixa {PortaBase}-{PortaBase + MaxTentativasPorta - 1}. " +
+            "Provavelmente há muitas instâncias do AppTunnel.exe rodando ao mesmo tempo — " +
+            "feche alguma (Gerenciador de Tarefas) antes de abrir uma nova.");
     }
 
     public void Parar()

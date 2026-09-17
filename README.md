@@ -127,6 +127,8 @@ AppTunnel.exe /silent /profile=1
 
 No modo silencioso, se o processo lançado pelo perfil encerrar, o AppTunnel também fecha automaticamente (nenhuma interface visível para fechar manualmente).
 
+Lançar `-silent -profile=N` várias vezes (ex.: múltiplos clientes do jogo em paralelo) não abre um `AppTunnel.exe` por vez: a primeira execução vira a instância "hub" (única dona do WinDivert/relay); as seguintes apenas repassam o perfil pedido pra ela via named pipe e encerram na hora. O hub só fecha sozinho quando a última instância tunelada por ele também encerrar — desde que nenhuma janela tenha sido aberta nesse meio tempo.
+
 ## Sistema de bandeja
 
 Quando a janela está visível e você clica no botão **Fechar** (X no canto superior direito), a aplicação é minimizada para a bandeja do sistema em vez de encerrar. Um clique duplo no ícone da bandeja restaura a janela.
@@ -161,6 +163,8 @@ AppTunnel.exe /silent /profile=1
 - Ambas as opções podem ser usadas juntas ou separadamente.
 
 No modo silencioso, se o processo lançado pelo perfil encerrar, o AppTunnel também fecha automaticamente (nenhuma interface visível para fechar manualmente).
+
+Lançar `-silent -profile=N` várias vezes (ex.: múltiplos clientes do jogo em paralelo) não abre um `AppTunnel.exe` por vez: a primeira execução vira a instância "hub" (única dona do WinDivert/relay); as seguintes apenas repassam o perfil pedido pra ela via named pipe e encerram na hora. O hub só fecha sozinho quando a última instância tunelada por ele também encerrar — desde que nenhuma janela tenha sido aberta nesse meio tempo.
 
 ## Sistema de bandeja
 
@@ -211,11 +215,13 @@ Quatro abas WPF com design moderno (Material Design inspired), atualizadas por p
   pela regra de firewall.
 - **DNS vaza por design.** A resolução de nomes sai pelo resolver local da
   máquina, não pelo proxy. As conexões TCP em si saem pelo proxy.
-- **O relay escuta em `IPAddress.Any:34567`.** Redirecionar para `127.0.0.1` não
+- **O relay escuta em `IPAddress.Any:34567`** (ou na próxima porta livre, até
+  34666 — cada instância do AppTunnel.exe abre a sua própria, permitindo rodar
+  várias em paralelo no modo silencioso). Redirecionar para `127.0.0.1` não
   funciona no Windows (o *strong host model* descarta o pacote reinjetado — ver
   WinDivert [#82](https://github.com/basil00/WinDivert/issues/82) e
   [#218](https://github.com/basil00/WinDivert/issues/218)), então a camada de
-  rede usa o IP real de saída da máquina. Consequência: a porta 34567 fica
+  rede usa o IP real de saída da máquina. Consequência: a porta do relay fica
   alcançável pela LAN se não houver regra de entrada bloqueando.
 - **Failover não troca IP durante a sessão.** O índice do proxy só avança quando
   a instância está com zero conexões ativas.
