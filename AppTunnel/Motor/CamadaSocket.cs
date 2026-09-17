@@ -56,7 +56,7 @@ internal sealed class CamadaSocket
             {
                 var erro = Marshal.GetLastWin32Error();
                 _telemetria.Registrar(NivelLog.Erro, $"CamadaSocket: WinDivertOpen falhou, Win32Error={erro}");
-                throw new Win32Exception(erro, "WinDivertOpen (SOCKET) falhou");
+                throw new Win32Exception(erro, $"WinDivertOpen (SOCKET) falhou, Win32Error={erro}: {new Win32Exception(erro).Message}");
             }
             _telemetria.Registrar(NivelLog.Info, $"CamadaSocket: filtro atualizado, {pids.Length} PID(s) alvo");
 

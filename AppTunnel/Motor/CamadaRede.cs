@@ -52,7 +52,7 @@ internal sealed class CamadaRede
         {
             var erro = Marshal.GetLastWin32Error();
             _telemetria.Registrar(NivelLog.Erro, $"CamadaRede: WinDivertOpen falhou, Win32Error={erro}");
-            throw new Win32Exception(erro, "WinDivertOpen (NETWORK) falhou");
+            throw new Win32Exception(erro, $"WinDivertOpen (NETWORK) falhou, Win32Error={erro}: {new Win32Exception(erro).Message}");
         }
         _telemetria.Registrar(NivelLog.Info, $"CamadaRede aberta (buffer={TamanhoMaximoPacote} bytes, IP local={enderecoTexto})");
 

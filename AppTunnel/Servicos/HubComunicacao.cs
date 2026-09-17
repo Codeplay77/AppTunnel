@@ -11,16 +11,42 @@ namespace AppTunnel.Servicos;
 // brigam pelo mesmo tráfego e uma delas simplesmente para de tunelar, então
 // só a primeira ("hub") pode abrir o MotorProxy; as demais só repassam o
 // pedido por esse pipe e encerram.
+//
+// Quem é o hub é decidido por um Mutex nomeado — atômico e instantâneo. Uma
+// versão anterior decidia isso tentando conectar no pipe com timeout curto
+// e virava hub quando a conexão falhava; isso tinha uma corrida real: em
+// builds onefile self-contained o cold start (extração dos nativos do
+// runtime empacotado, primeira instalação do driver WinDivert) é bem mais
+// lento que num build normal, e duas instâncias lançadas quase juntas podiam
+// achar as duas que "não tem hub" antes de qualquer uma abrir o pipe —
+// resultando em dois hubs concorrentes.
 internal static class HubComunicacao
 {
+    private const string NomeMutex = "AppTunnel.HubMutex";
     private const string NomePipe = "AppTunnel.Hub";
-    private const int TimeoutConexaoMs = 300;
-    private const int MaxInstanciasPipe = 32;
+    // Generoso de propósito: o hub pode demorar entre vencer o mutex e abrir
+    // o pipe (driver WinDivert, cold start onefile) — o cliente já sabe que
+    // existe um hub (via mutex), então vale esperar em vez de desistir cedo.
+    private const int TimeoutConexaoMs = 15000;
 
-    // Tenta repassar o pedido (lançar perfil e/ou mostrar janela) para um hub
-    // já em execução. Retorna true se conseguiu falar com um hub — quem
-    // chamou deve encerrar o processo em seguida. Retorna false quando não
-    // há hub ouvindo, e este processo deve virar o hub.
+    private static Mutex? _mutexHub;
+
+    // Decide atomicamente, sem nenhum IPC, se este processo é o hub. Deve ser
+    // a primeira coisa chamada no startup, antes de qualquer inicialização
+    // lenta — a janela de corrida do design antigo era exatamente esse
+    // intervalo. Nunca libera o mutex: ele marca "hub vivo" até o processo
+    // encerrar, quando o Windows o libera sozinho.
+    public static bool TornarSeHub()
+    {
+        _mutexHub = new Mutex(initiallyOwned: true, NomeMutex, out var criadoAgora);
+        return criadoAgora;
+    }
+
+    // Só deve ser chamado quando TornarSeHub() já disse que existe um hub.
+    // Repassa o pedido (lançar perfil e/ou mostrar janela) esperando o hub
+    // abrir o pipe. Retorna false só se o hub morreu antes disso (ex.:
+    // WinDivertOpen falhou e ele já mostrou o próprio erro) — nesse caso não
+    // há o que fazer além de encerrar.
     public static bool TentarDelegar(int? perfilId, bool mostrarJanela)
     {
         try
@@ -36,8 +62,6 @@ internal static class HubComunicacao
         }
         catch (Exception)
         {
-            // Qualquer falha aqui (pipe inexistente, timeout, ocupado demais)
-            // significa "não há hub alcançável" — o chamador vira o hub.
             return false;
         }
     }
@@ -54,7 +78,7 @@ internal static class HubComunicacao
                 NamedPipeServerStream servidor;
                 try
                 {
-                    servidor = new NamedPipeServerStream(NomePipe, PipeDirection.In, MaxInstanciasPipe);
+                    servidor = new NamedPipeServerStream(NomePipe, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances);
                     await servidor.WaitForConnectionAsync();
                 }
                 catch

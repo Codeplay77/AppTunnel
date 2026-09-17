@@ -24,8 +24,14 @@ public partial class App : System.Windows.Application
 
         ParseArgumentos(e.Args);
 
-        if (HubComunicacao.TentarDelegar(PerfilSolicitadoId, mostrarJanela: !ModoSilencioso))
+        // Só a primeira instância do AppTunnel.exe na sessão vira "hub" e abre
+        // o MotorProxy (WinDivert só entrega cada pacote a um handle por
+        // prioridade quando os filtros se sobrepõem — ver HubComunicacao). A
+        // decisão em si (Mutex) é instantânea; só o repasse pelo pipe espera
+        // o hub terminar de inicializar.
+        if (!HubComunicacao.TornarSeHub())
         {
+            HubComunicacao.TentarDelegar(PerfilSolicitadoId, mostrarJanela: !ModoSilencioso);
             Shutdown();
             return;
         }
@@ -163,7 +169,7 @@ public partial class App : System.Windows.Application
         }
     }
 
-   private void MostrarJanela()
+    private void MostrarJanela()
     {
         if (_janela == null) return;
 
